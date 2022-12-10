@@ -42,11 +42,53 @@ def enter_data(billboard_data, iTunes_list, bands_data, conn, cur):
 
         artist_id = bands_data[x][0]
         date_time = bands_data[x][1]
-        venue_name = bands_data[x][3]
-        country = bands_data[x][4]
+        venue_name = bands_data[x][2]
+        country = bands_data[x][3]
         cur.execute('INSERT OR IGNORE INTO bands_table (artist_id, date_time, venue_name, country) VALUES (?,?,?,?)', (artist_id, date_time, venue_name, country))
     conn.commit()
     pass
+
+
+def get_explicit_chart(db_filename):
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db_filename)
+    cur = conn.cursor()
+
+    cur.execute("""
+    SELECT COUNT(*), trackExplicitness
+    FROM itunes_songs
+    JOIN  explicit_table
+    ON explicit_table.explicit_id= itunes_songs.trackExplicitness
+    GROUP BY explicit_table.explicit
+    """)
+    data = cur.fetchall()
+    explict_data = data[0][0]
+    nonexplicit_data = data[1][0]
+
+    labels = 'Explicit', 'Non-Explicit'
+    colors = ['gold', 'yellowgreen']
+    sizes = [explict_data, nonexplicit_data]
+
+    # plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%')
+    # plt.title("Explicit vs Non-Explicit Songs")
+    # plt.show()
+    pass
+
+
+def get_avg_lyrics_chart(db_filename):
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db_filename)
+    cur = conn.cursor()
+
+    cur.execute("""
+    SELECT COUNT(*), trackExplicitness
+    FROM itunes_songs
+    JOIN  explicit_table
+    ON explicit_table.explicit_id= itunes_songs.trackExplicitness
+    GROUP BY explicit_table.explicit
+    """)
+
+
 
 def main():
     url = "https://www.billboard.com/charts/artist-100/"
