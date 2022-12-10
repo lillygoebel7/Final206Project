@@ -40,15 +40,13 @@ def enter_data(billboard_data, iTunes_list, bands_data, conn, cur):
         trackExplicitness = iTunes_list[x][5]
         cur.execute('INSERT OR IGNORE INTO itunes_songs (artist_id, trackName, genre, release_date, track_time, trackExplicitness) VALUES (?,?,?,?,?,?)', (artist_id, trackname, genre, release_date, track_time, trackExplicitness))
 
-        # artist_id = bands_data[x][0]
-        # date_time = bands_data[x][1]
-        # location = bands_data[x][2]
-        # venue_name = bands_data[x][3]
-        # country = bands_data[x][4]
-        # cur.execute('INSERT OR IGNORE INTO bands_table (artist_id, date_time, location, venue_name, country) VALUES (?,?,?,?,?)', (artist_id, date_time, location, venue_name, country))
+        artist_id = bands_data[x][0]
+        date_time = bands_data[x][1]
+        venue_name = bands_data[x][3]
+        country = bands_data[x][4]
+        cur.execute('INSERT OR IGNORE INTO bands_table (artist_id, date_time, venue_name, country) VALUES (?,?,?,?)', (artist_id, date_time, venue_name, country))
     conn.commit()
     pass
-
 
 def main():
     url = "https://www.billboard.com/charts/artist-100/"

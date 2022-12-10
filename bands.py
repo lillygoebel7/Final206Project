@@ -15,14 +15,13 @@ def open_database(db_name):
 
 
 def bandsintown(billboard_data, conn, cur):
-    cur.execute("CREATE TABLE IF NOT EXISTS genre_table (genre_id INTEGER PRIMARY KEY, genre_name STRING)")
+    cur.execute("CREATE TABLE IF NOT EXISTS bands_table (artist_id INTEGER PRIMARY KEY, date_time STRING, venue_name STRING, country STRING)")
     conn.commit()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS bands_table (artist_id INTEGER PRIMARY KEY, date_time STRING, location STRING, venue_name STRING, country STRING)")
+    cur.execute("CREATE TABLE IF NOT EXISTS venue_table (venue_id INTEGER PRIMARY KEY, venue_name STRING)")
     conn.commit()
 
     bands_list = []
-
     for i in billboard_data:
         artist_id = i[0]
         artist = i[1]
@@ -30,20 +29,40 @@ def bandsintown(billboard_data, conn, cur):
         content = json.loads(data.text)
         if content == []:
             date_time = "Not on Tour"
-            location = "Not on Tour"
-            venue_name = "Not on Tour"
-            country = "Not on Tour"
+            venue_name = "N/A"
+            country = "N/A"
+            my_tup = (artist_id, date_time, venue_name, country)
         elif content != []:
             inner_content = content[0]
             for d in inner_content:
                 date_time = inner_content['datetime']
-                location = inner_content['venue']["location"]
+
                 venue_name = inner_content['venue']['name']
+                venue_list = []
+                venue_dict = {}
+                count = 0
+                for venue_name in venue_list:
+                    venue_dict[venue_name] = count
+                    count += 1
+
                 country = inner_content['venue']['country']
-            my_tup = (artist_id, date_time, location, venue_name, country)
+            my_tup = (artist_id, date_time, venue_name, country)
         bands_list.append(my_tup)
-    print(bands_list)
     return bands_list
+
+#             genre = content['results'][0]['primaryGenreName']
+#             genre_list = ["Pop", "Soundtrack", "Country", "Hip-Hop/Rap", "Holiday", "Christmas", "Jazz", "R&B/Soul", "Vocal Pop", "Alternative", "Metal", "Musicals", "Dance", "Singler/Songwriter"]
+#             genre_dict = {}
+#             count = 0
+#             for genre_name in genre_list:
+#                 genre_dict[genre_name] = count
+#                 count += 1
+
+#             for i in genre_dict:
+#                 if genre == i:
+#                     genre = genre_dict[i]
+#                     cur.execute('INSERT OR IGNORE INTO genre_table (genre_id, genre_name) VALUES (?,?)', (genre, i))
+
 
 def main():
     url = "https://www.billboard.com/charts/artist-100/"

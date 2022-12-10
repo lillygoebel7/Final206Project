@@ -59,7 +59,6 @@ def iTunesSearch(billboard_data, conn, cur):
             not_avail = "N/A"
             itunes_tup = (artist_id, not_avail, not_avail, not_avail, not_avail, not_avail)
             itunes_lst.append(itunes_tup)
-    # print(itunes_lst)
     return itunes_lst
 
 def explicit_table(conn, cur):
