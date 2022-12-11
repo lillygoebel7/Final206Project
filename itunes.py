@@ -36,13 +36,12 @@ def iTunesSearch(billboard_data, conn, cur):
             conn.commit()
 
             genre = content['results'][0]['primaryGenreName']
-            genre_list = ["Pop", "Soundtrack", "Country", "Hip-Hop/Rap", "Holiday", "Christmas", "Jazz", "R&B/Soul", "Vocal Pop", "Alternative", "Metal", "Musicals", "Dance", "Singler/Songwriter"]
+            genre_list = ["Pop", "Soundtrack", "Country", "Hip-Hop/Rap", "Holiday", "Christmas", "Jazz", "R&B/Soul", "Vocal Pop", "Alternative", "Metal", "Musicals", "Dance", "Singer/Songwriter", "Rock", "Hip-Hop"]
             genre_dict = {}
             count = 0
             for genre_name in genre_list:
                 genre_dict[genre_name] = count
                 count += 1
-
             for i in genre_dict:
                 if genre == i:
                     genre = genre_dict[i]
