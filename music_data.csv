@@ -1,0 +1,39 @@
+Explict or Not Explicit,Number of Explicit Songs
+Explicit,27
+Not Explicit,73
+ 
+Genre,Number of songs in Genre
+Pop,29
+Soundtrack,5
+Country,12
+Hip-Hop/Rap,13
+Holiday,9
+Christmas,4
+Jazz,1
+R&B/Soul,5
+Vocal Pop,1
+Alternative,6
+Metal,1
+Musicals,1
+Dance,3
+Singer/Songwriter,1
+Rock,8
+Hip-Hop,1
+ 
+On Tour or Not on Tour,Number of Artisit on Tour
+0,48
+On Tour,52
+ 
+Country,Number of Events in Each Country
+Australia,4
+Canada,2
+Mexico,1
+New Zealand,3
+Not on Tour,48
+Portugal,1
+Qatar,1
+United Kingdom,6
+United States,34
+ 
+Average Song Length for 100 songs,Standard Deviation
+3.62,0.97

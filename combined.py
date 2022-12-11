@@ -10,7 +10,11 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 import re
+import math
 import matplotlib.pyplot as plt
+import numpy as np
+import statistics
+from scipy.stats import norm
 from billboard import read_billboard_data
 from itunes import iTunesSearch
 from itunes import explicit_table
@@ -121,7 +125,7 @@ def get_tour_data(db_filename):
 def get_avg_song_length(db_filename):
     path = os.path.dirname(os.path.abspath(__file__))
     conn = sqlite3.connect(path+'/'+db_filename)
-    cur = conn.cursor()
+    cur = conn.cursor() 
 
     cur.execute('''
     SELECT AVG(itunes_songs.track_time), itunes_songs.track_time 
@@ -130,12 +134,24 @@ def get_avg_song_length(db_filename):
 
     song_length_data = cur.fetchall()
     song_length_data = song_length_data[0][0]/ 60000
-    print(song_length_data)
-    return song_length_data
 
 
+    cur.execute('''
+    SELECT itunes_songs.track_time 
+    FROM itunes_songs''')
 
-def write_csv(explicit_data, genre_data, tour_data, country_data, song_length_data, filename):
+    times = cur.fetchall()
+    my_lst = []
+    for time in times:
+        my_lst.append(int(time[0]))
+    sd = statistics.stdev(my_lst) / 60000
+
+    song_data =(song_length_data,sd)
+   
+    return song_data
+
+
+def write_csv(explicit_data, genre_data, tour_data, country_data, song_data, filename):
     with open(filename, 'w', newline="") as fileout:
         writer = csv.writer(fileout)
         header = ['Explict or Not Explicit','Number of Explicit Songs']
@@ -174,12 +190,13 @@ def write_csv(explicit_data, genre_data, tour_data, country_data, song_length_da
             writer.writerow(c_list)
 
         writer.writerow([' '])
-        writer.writerow(["Average Song Length for 100 songs"])
-        # for item in song_length_data:
-            #  s_list = []
-            #  s_list.append(item)
-        song_length_data = ("%.2f" % song_length_data)
-        writer.writerow(song_length_data)
+        writer.writerow(["Average Song Length for 100 songs", "Standard Deviation"])
+        s_list = []
+        song_avg_data = ("%.2f" % song_data[0])
+        song_sd_data = ("%.2f" % song_data[1])
+        s_list.append(song_avg_data)
+        s_list.append(song_sd_data)
+        writer.writerow(s_list)
     pass
 
 def explicit_chart(explicit_data):
@@ -211,7 +228,7 @@ def genre_chart(genre_data):
         num_genre.append(x)
         genre.append(dict[x])
     
-    plt.barh(num_genre, genre, color = 'yellowgreen')
+    plt.barh(num_genre, genre, color = 'plum')
     plt.ylabel("Genre Categories")
     plt.xlabel("Quantity")
     plt.title("Number of Aritist Top Songs per Genre")
@@ -250,7 +267,7 @@ def country_chart(country_data):
         country.append(x)
         num_country.append(country_dict[x])
 
-    plt.bar(country, num_country, color = 'yellowgreen')
+    plt.bar(country, num_country, color = 'powderblue')
     plt.xlabel("Countries")
     plt.ylabel("Quantity")
     plt.xticks(rotation = 40)
@@ -260,6 +277,16 @@ def country_chart(country_data):
 
     pass
 
+def avg_length_chart(song_data):
+
+    x = np.arange(-1, 8, 0.01)
+    plt.plot(x, norm.pdf(x, song_data[0], song_data[1]))
+   
+    plt.xlabel('Song Length in Minutes')
+    plt.ylabel("Frequency")
+    plt.title('Normal Distribution of Song Length in Minutes', fontsize=14)
+    plt.show()
+    pass
 
 def main():
     url = "https://www.billboard.com/charts/artist-100/"
@@ -280,8 +307,8 @@ def main():
     genre_data = get_genre_data('music_information2.db')
     tour_data = get_tour_data('music_information2.db')
     country_data = get_country_data('music_information2.db')
-    song_length_data = get_avg_song_length('music_information2.db')
-    write_csv(explicit_data, genre_data, tour_data, country_data, song_length_data, 'music_data.csv')
+    song_data = get_avg_song_length('music_information2.db')
+    write_csv(explicit_data, genre_data, tour_data, country_data, song_data, 'music_data.csv')
 
     # explicit_data = get_explicit_data('music_information2.db')
     explicit_chart(explicit_data)
@@ -293,6 +320,8 @@ def main():
 
     # country_data = get_country_data('music_information2.db')
     country_chart(country_data)
+
+    avg_length_chart(song_data)
 
     
     pass
